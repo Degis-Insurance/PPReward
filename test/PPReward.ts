@@ -112,17 +112,28 @@ describe("PPRewardTest", function () {
       )
         .to.emit(ppreward, "Claim")
         .withArgs(user2.address, 200);
+
+      expect(await deg.balanceOf(user2.address)).to.equal(200);
     });
 
     it("should not be able to claim reward with wrong proof", async function () {
-      const wrongProof = getMockProof(user1.address, 1000);
+      const wrongProofForUser1 = getMockProof(user1.address, 1000);
+      const wrongProofForUser2 = getMockProof(user2.address, 2000);
 
       await expect(
-        ppreward.connect(user1).claim(user1.address, 1000, wrongProof)
+        ppreward.connect(user1).claim(user1.address, 1000, wrongProofForUser1)
       ).to.be.revertedWith("Not in the reward list");
 
       await expect(
-        ppreward.connect(user1).claim(user1.address, 100, wrongProof)
+        ppreward.connect(user1).claim(user1.address, 100, wrongProofForUser1)
+      ).to.be.revertedWith("Not in the reward list");
+
+      await expect(
+        ppreward.connect(user2).claim(user2.address, 2000, wrongProofForUser2)
+      ).to.be.revertedWith("Not in the reward list");
+
+      await expect(
+        ppreward.connect(user2).claim(user2.address, 200, wrongProofForUser2)
       ).to.be.revertedWith("Not in the reward list");
     });
 
@@ -132,6 +143,28 @@ describe("PPRewardTest", function () {
       await expect(
         ppreward.connect(user1).claim(user1.address, 1000, proof)
       ).to.be.revertedWith("Not in the reward list");
+
+      await expect(
+        ppreward.connect(user1).claim(user2.address, 1000, proof)
+      ).to.be.revertedWith("Not in the reward list");
+    });
+
+    it("should not be able to claim multiple times", async function () {
+      const proofForUser1 = getMockProof(user1.address, 100);
+
+      await ppreward.connect(user1).claim(user1.address, 100, proofForUser1);
+
+      await expect(
+        ppreward.connect(user1).claim(user1.address, 100, proofForUser1)
+      ).to.be.revertedWith("Already Claimed");
+
+      const proofForUser2 = getMockProof(user2.address, 200);
+
+      await ppreward.connect(user2).claim(user2.address, 200, proofForUser2);
+
+      await expect(
+        ppreward.connect(user2).claim(user2.address, 200, proofForUser2)
+      ).to.be.revertedWith("Already Claimed");
     });
 
     afterEach(async function () {
