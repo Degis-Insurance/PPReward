@@ -21,8 +21,6 @@ contract PPReward is Ownable {
     // Reward tokens
     IERC20 public immutable DEG;
 
-    IERC20 public immutable USDC;
-
     uint256 public immutable endTimestamp;
 
     // Root of the merkle tree
@@ -32,27 +30,54 @@ contract PPReward is Ownable {
     // 0 as not claimed, 1 as claimed
     mapping(address => uint256) public alreadyClaimed;
 
-    constructor(
-        address _deg,
-        address _usdc,
-        uint256 _endTimestamp
-    ) {
-        DEG = IERC20(_deg); // 0x0c1902987652D5A6168DD65EE6B2536456Ef92d3
-        USDC = IERC20(_usdc); //0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E
+    event Claim(address indexed user, uint256 amount);
+
+    constructor(address _deg, uint256 _endTimestamp) {
+        DEG = IERC20(_deg); // 0x9f285507Ea5B4F33822CA7aBb5EC8953ce37A645
 
         endTimestamp = _endTimestamp;
     }
 
+    modifier notEnded() {
+        require(block.timestamp < endTimestamp, "PPReward: ended");
+        _;
+    }
+
+    modifier revokable() {
+        require(block.timestamp > endTimestamp, "PPReward: not ended yet");
+        _;
+    }
+
+    /// @notice Set merkle root by the owner
     function setMerkleRoot(bytes32 _root) external onlyOwner {
         root = _root;
     }
 
-    function claim(
-        address _token,
+    function isClaimable(
         address _to,
         uint256 _amount,
         bytes32[] calldata _proof
-    ) external {
+    ) external view returns (bool) {
+        bytes32 leaf = keccak256(abi.encodePacked(_to, _amount));
+
+        bool isValidate = MerkleProof.verify(_proof, root, leaf);
+        return isValidate;
+    }
+
+    function getLeaf(address _to, uint256 _amount)
+        external
+        pure
+        returns (bytes32)
+    {
+        return keccak256(abi.encodePacked(_to, _amount));
+    }
+
+    /// @notice Claim DEG reward with the proof
+    function claim(
+        address _to,
+        uint256 _amount,
+        bytes32[] calldata _proof
+    ) external notEnded {
         require(alreadyClaimed[_to] == 0, "Already Claimed");
 
         bytes32 leaf = keccak256(abi.encodePacked(_to, _amount));
@@ -62,11 +87,13 @@ contract PPReward is Ownable {
 
         alreadyClaimed[_to] = 1;
 
-        uint256 amountClaimed = _safeTokenTransfer(address(DEG), _amount);
+        DEG.safeTransfer(_to, _amount);
+
+        emit Claim(_to, _amount);
     }
 
-    function _safeTokenTransfer(address _token, uint256 _amount)
-        internal
-        returns (uint256)
-    {}
+    /// @notice Revoke the remaining DEG tokens
+    function revoke() external onlyOwner revokable {
+        DEG.safeTransfer(owner(), DEG.balanceOf(address(this)));
+    }
 }

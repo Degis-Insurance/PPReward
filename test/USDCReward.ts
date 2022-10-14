@@ -4,8 +4,8 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { USDCReward } from "../typechain-types/contracts/USDCReward.sol/USDCReward";
-import { MockERC20 } from "../typechain-types/contracts/mockERC20.sol";
+import { MockERC20 } from "../typechain-types/contracts/mockERC20.sol/MockERC20";
+import { USDCReward } from "../typechain-types/contracts/USDCReward";
 
 describe("USDCRewardTest", function () {
   let dev: SignerWithAddress,

@@ -38,7 +38,7 @@ const config: HardhatUserConfig = {
         count: 20,
       },
     },
-  }
+  },
 };
 
 export default config;
