@@ -1,6 +1,9 @@
 {
   "localhost": {},
-  "fuji": {},
+  "fuji": {
+    "MockDEG": "0xf70b735ABAc85720514feF0D605b6D0C07da0829",
+    "PPReward": "0x0731fBA1fd40C613893cF7c67d51bb2aCB6F197E"
+  },
   "avaxTest": {},
   "avax": {}
 }
