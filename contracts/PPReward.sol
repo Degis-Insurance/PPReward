@@ -32,10 +32,10 @@ contract PPReward is Ownable {
 
     event Claim(address indexed user, uint256 amount);
 
-    constructor(address _deg, uint256 _endTimestamp) {
+    constructor(address _deg, uint256 _duration) {
         DEG = IERC20(_deg); // 0x9f285507Ea5B4F33822CA7aBb5EC8953ce37A645
 
-        endTimestamp = _endTimestamp;
+        endTimestamp = block.timestamp + _duration;
     }
 
     modifier notEnded() {

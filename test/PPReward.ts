@@ -4,12 +4,7 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { MockERC20 } from "../typechain-types/contracts/mockERC20.sol/MockERC20";
-import {
-  MockERC20__factory,
-  PPReward,
-  PPReward__factory,
-} from "../typechain-types";
+
 import { getLatestBlockTimestamp } from "./utils";
 import { getRewardListRoot, RewardItem } from "../scripts/rewardList";
 
@@ -21,6 +16,12 @@ import {
   getMockRewardListRoot,
   storeMockRewardList,
 } from "../scripts/mockrewardList";
+import {
+  MockERC20,
+  MockERC20__factory,
+  PPReward,
+  PPReward__factory,
+} from "../typechain-types";
 
 describe("PPRewardTest", function () {
   let dev: SignerWithAddress,
@@ -43,10 +44,7 @@ describe("PPRewardTest", function () {
     // Block timestamp
     now = await getLatestBlockTimestamp(ethers.provider);
 
-    ppreward = await new PPReward__factory(dev).deploy(
-      deg.address,
-      now + duration
-    );
+    ppreward = await new PPReward__factory(dev).deploy(deg.address, duration);
 
     deg.mint(ppreward.address, ethers.utils.parseEther("1000000"));
   });
@@ -58,7 +56,7 @@ describe("PPRewardTest", function () {
 
     it("should have the correct end time stamp", async function () {
       expect(await ppreward.endTimestamp()).to.be.above(0);
-      expect(await ppreward.endTimestamp()).to.equal(now + duration);
+      expect(await ppreward.endTimestamp()).to.equal(now + duration + 1);
     });
   });
 
