@@ -18,7 +18,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       ? addressList[network.name].DegisToken
       : addressList[network.name].MockDEG;
 
-  const duration = 3600 * 24 * 30;
+  const duration = 3600 * 24 * 60;
 
   // Deploy degis token contract
   // No constructor args

@@ -21,7 +21,7 @@ contract PPReward is Ownable {
     // Reward tokens
     IERC20 public immutable DEG;
 
-    uint256 public immutable endTimestamp;
+    uint256 public endTimestamp;
 
     // Root of the merkle tree
     bytes32 public root;
@@ -51,6 +51,10 @@ contract PPReward is Ownable {
     /// @notice Set merkle root by the owner
     function setMerkleRoot(bytes32 _root) external onlyOwner {
         root = _root;
+    }
+
+    function setEndTime(uint256 _duration) external onlyOwner {
+        endTimestamp = block.timestamp + _duration;
     }
 
     function isClaimable(

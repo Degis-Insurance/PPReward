@@ -34,13 +34,14 @@ export const transferMockItem = (item: RewardItem): string => {
   const { address, reward } = item;
 
   const checksumAddress = ethers.utils.getAddress(address);
+  const rewardToWei = ethers.utils.parseUnits(reward.toString(), "ether");
 
   //   console.log("Checksum address: ", checksumAddress);
   //   console.log("Amount: ", rewardToWei);
 
   const itemHash: string = ethers.utils.solidityKeccak256(
     ["address", "uint256"],
-    [checksumAddress, reward]
+    [checksumAddress, rewardToWei]
   );
 
   return itemHash;
