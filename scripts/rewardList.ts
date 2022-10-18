@@ -57,3 +57,12 @@ export const getProof = (address: string, reward: number): string[] => {
   const proof = tree.getHexProof(transferItem({ address, reward }));
   return proof;
 };
+
+export const getTotalReward = () => {
+  const rewardList = getRewardList();
+
+  const numberList = rewardList.map((item: RewardItem) => item.reward);
+
+  const totalReward = numberList.reduce((a, b) => a + b, 0);
+  console.log("Total reward: ", totalReward);
+};

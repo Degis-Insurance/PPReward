@@ -7,7 +7,7 @@ import {
   getMockProof,
   getMockRewardListRoot,
 } from "../scripts/mockrewardList";
-import { getRewardListRoot } from "../scripts/rewardList";
+import { getRewardListRoot, getTotalReward } from "../scripts/rewardList";
 
 import {
   MockERC20,
@@ -84,4 +84,11 @@ task("mintDEG", "Mint DEG token").setAction(async (_, hre) => {
     hre.ethers.utils.parseUnits("1000000", 18)
   );
   console.log("Tx details: ", await tx.wait());
+});
+
+task("getTotalReward", "Mint DEG token").setAction(async (_, hre) => {
+  const { network } = hre;
+
+  const totalReward = getTotalReward();
+  console.log(totalReward);
 });
